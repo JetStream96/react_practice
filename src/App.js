@@ -1,25 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useRef, useEffect} from 'react';
+import TaskList from './TaskList';
 
 function App() {
+  const taskStorageKey = "8vfd09-taskList";
+  const [taskList, setTaskList] = useState([]);
+  const taskNameRef = useRef();
+
+  useEffect(() => {
+    let storedVal = localStorage.getItem(taskStorageKey);
+    if (storedVal) setTaskList(JSON.parse(storedVal));
+  }, []);
+
+  useEffect(() =>{
+    localStorage.setItem(taskStorageKey, JSON.stringify(taskList));
+  }, [taskList]);
+
+  function toggleChecked() {
+    
+  }
+
+  function addTask(e) {
+    let name = taskNameRef.current.value;
+    if (name === '') return;
+    setTaskList([...taskList,{id: 1, name: name, done:false}]);
+    taskNameRef.current.value = '';
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <TaskList tasks={taskList} />
+      <input ref={taskNameRef} type="text" />
+      <button onClick={addTask}>Add a task</button>
+      <button>Remove selected tasks</button>
+    </>
   );
 }
 
